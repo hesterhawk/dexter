@@ -3,12 +3,18 @@ package generator
 import (
   "io/ioutil"
   "sort"
-  "log"
   "os"
+  "fmt"
+  "bytes"
+  "text/template"
 )
 
-// test
-func GetAllSortedDrafts(langs []string) []string {
+type Drafts struct {
+  Drafts []Draft
+  CurrentPage int
+}
+
+func GetSortedDrafts(langs []string) []string {
 
   var drafts []string
 
@@ -19,10 +25,10 @@ func GetAllSortedDrafts(langs []string) []string {
     var dir = path + "/drafts/" + lang
 
     var err = os.Chdir(dir)
-    CheckError(err)
+    CheckFatal(6, err)
 
     files, err := ioutil.ReadDir(dir)
-    CheckError(err)
+    CheckFatal(7, err)
 
     for _, entry := range files {
       drafts = append(drafts, dir + "/" + entry.Name())
@@ -31,11 +37,29 @@ func GetAllSortedDrafts(langs []string) []string {
 
   sort.Strings(drafts)
 
+  for _, d := range drafts {
+
+    
+  }
+
   return drafts
 }
 
-func CheckError(e error) {
-  if e != nil {
-    log.Fatalf("[!!] Error with opening folder: %s", e)
-  }
+func (ds *Drafts) render() {
+
+  /*
+    --- Gather draft content
+  */
+  draftList, err := ioutil.ReadFile("pubs.html")
+  CheckFatal(8, err)
+
+  /*
+    --- Merge two of them
+  */
+  pub, _ := template.New("drafts").Parse(string([]byte(draftList)))
+
+  var draftListContent bytes.Buffer
+  pub.Execute(&draftListContent, ds)
+
+  fmt.Println(draftListContent.String())
 }
