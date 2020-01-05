@@ -1,0 +1,21 @@
+{
+  "pub": {
+    "resources": [
+      {
+        "type": "js",
+        "url": "http:/google.com"
+      },
+      {
+        "type": "css",
+        "url": "http:/google.com"
+      }
+    ]
+  },
+
+  "pubs": {
+    "default": {
+      "per_page": 10,
+      "langs": ["pl", "en"]
+    }
+  }
+}
