@@ -4,7 +4,7 @@ import (
   "io/ioutil"
   "sort"
   "os"
-  //"fmt"
+  "fmt"
   "log"  
   "bytes"
   "helper"
@@ -14,8 +14,9 @@ import (
 )
 
 type Drafts struct {
+  AllPages int
+  CurrentPage int  
   Drafts []Draft
-  CurrentPage int
 }
 
 /*
@@ -61,6 +62,12 @@ func GenerateDraftsLists(drafts []Draft, perPage int) {
 	currentPage := 1
 	lenDrafts := len(drafts)
 
+  allPages := lenDrafts / perPage
+
+  if (lenDrafts % perPage) > 0 {
+    allPages++
+  }
+
   for from := 0 ; from < lenDrafts ; from += perPage {
 
 		to := 0
@@ -76,6 +83,7 @@ func GenerateDraftsLists(drafts []Draft, perPage int) {
 		currentPage++
 
 		dl := Drafts{
+      AllPages: allPages,
 			CurrentPage: currentPage,
 			Drafts: drafts[from:to],
     }
@@ -111,5 +119,7 @@ func (ds *Drafts) Render() {
   */
   helper.CreateFile(path + "/../../bin/page-" + strconv.Itoa(ds.CurrentPage) + ".html", draftListContent.String())
 
+  // DEBUG
+  fmt.Println(ds.AllPages)
   log.Fatalf("%s", "dd")
 }

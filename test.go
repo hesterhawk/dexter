@@ -2,7 +2,6 @@ package main
 
 import (
   "fmt"
-  "sort"
 )
 
 type Square struct {
@@ -11,17 +10,8 @@ type Square struct {
 
 func main() {
 
-  var s []Square
+  pages := 10
+  per := 3
 
-  s = append(s, Square{"aaaa"})
-  s = append(s, Square{"cccc"})
-  s = append(s, Square{"ffff"})
-  s = append(s, Square{"bbbb"})
-  s = append(s, Square{"mmmm"})
-
-  sort.Slice(s[:], func(i, j int) bool {
-    return s[i].name < s[j].name
-  })
-
-  fmt.Println(s)
+  fmt.Println(pages / per)
 }
