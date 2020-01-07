@@ -6,13 +6,26 @@ import (
   "generator"
 )
 
+
+var CC = "DSADSADSA"
+
 func main() {
 
-  // temp
+  // ---- config
   var langs = []string {"pl", "en"}
 
-  var drafts = generator.GetSortedDrafts(langs)
+  var perPage = 3
 
-  fmt.Println(drafts)
-  fmt.Println("done.")
+  // ----
+
+  var drafts = generator.GetAllSortedDrafts(langs)
+
+  for _, d := range drafts {
+    fmt.Println(d)
+  }
+
+  if len(drafts) > 0 {
+
+    generator.GenerateDraftsLists(drafts, perPage)
+  }
 }

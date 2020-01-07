@@ -4,9 +4,13 @@ import (
   "io/ioutil"
   "sort"
   "os"
-  "fmt"
+  //"fmt"
+  "log"  
   "bytes"
-  "text/template"
+  "helper"
+  "strconv"
+  "exception"
+  "text/template"  
 )
 
 type Drafts struct {
@@ -14,9 +18,12 @@ type Drafts struct {
   CurrentPage int
 }
 
-func GetSortedDrafts(langs []string) []string {
+/*
+  --- Get all sorted Drafts - by all languages
+*/
+func GetAllSortedDrafts(langs []string) []Draft {
 
-  var drafts []string
+  var drafts []Draft
 
   path, _ := os.Getwd()
 
@@ -25,33 +32,71 @@ func GetSortedDrafts(langs []string) []string {
     var dir = path + "/drafts/" + lang
 
     var err = os.Chdir(dir)
-    CheckFatal(6, err)
+    exception.CheckFatal(6, err)
 
     files, err := ioutil.ReadDir(dir)
-    CheckFatal(7, err)
+    exception.CheckFatal(7, err)
 
     for _, entry := range files {
-      drafts = append(drafts, dir + "/" + entry.Name())
+
+      d := Draft{File: entry.Name(), FilePath: dir + "/" + entry.Name(), Lang: lang}
+      d.SetHeader()
+
+      drafts = append(drafts, d)
     }
   }
 
-  sort.Strings(drafts)
-
-  for _, d := range drafts {
-
-    
-  }
+  /*
+    --- Sorting articles by file name (so it's a date)
+  */
+  sort.Slice(drafts[:], func(i, j int) bool {
+    return drafts[i].File > drafts[j].File
+  })
 
   return drafts
 }
 
-func (ds *Drafts) render() {
+func GenerateDraftsLists(drafts []Draft, perPage int) {
+
+	currentPage := 1
+	lenDrafts := len(drafts)
+
+  for from := 0 ; from < lenDrafts ; from += perPage {
+
+		to := 0
+
+		if lenDrafts < (from + perPage) {	
+
+			to = lenDrafts
+		} else {
+
+			to = from + perPage
+		}
+
+		currentPage++
+
+		dl := Drafts{
+			CurrentPage: currentPage,
+			Drafts: drafts[from:to],
+    }
+    
+    dl.Render()
+	}
+
+}
+
+// TODO
+func (ds *Drafts) Render() {
+
+  path, _ := os.Getwd()
 
   /*
     --- Gather draft content
   */
-  draftList, err := ioutil.ReadFile("pubs.html")
-  CheckFatal(8, err)
+
+  // TODO - path
+  draftList, err := ioutil.ReadFile(path + "/../../templates/pubs.html")
+  exception.CheckFatal(8, err)
 
   /*
     --- Merge two of them
@@ -61,5 +106,10 @@ func (ds *Drafts) render() {
   var draftListContent bytes.Buffer
   pub.Execute(&draftListContent, ds)
 
-  fmt.Println(draftListContent.String())
+  /*
+    --- Create Draft Lists file
+  */
+  helper.CreateFile(path + "/../../bin/page-" + strconv.Itoa(ds.CurrentPage) + ".html", draftListContent.String())
+
+  log.Fatalf("%s", "dd")
 }

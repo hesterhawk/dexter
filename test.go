@@ -2,23 +2,26 @@ package main
 
 import (
   "fmt"
+  "sort"
 )
 
-type Shape interface {
-  area() float64
-}
-
 type Square struct {
-  x1, y1, x2, y2 float64
-}
-
-func (s *Square) area() float64 {
-  l := s.x1 + s.y1 + s.x2 + s.y2
-  return l * l
+  name string
 }
 
 func main() {
 
-  s := Square{0, 0, 5, 5}
-  fmt.Println(s.area())
+  var s []Square
+
+  s = append(s, Square{"aaaa"})
+  s = append(s, Square{"cccc"})
+  s = append(s, Square{"ffff"})
+  s = append(s, Square{"bbbb"})
+  s = append(s, Square{"mmmm"})
+
+  sort.Slice(s[:], func(i, j int) bool {
+    return s[i].name < s[j].name
+  })
+
+  fmt.Println(s)
 }
