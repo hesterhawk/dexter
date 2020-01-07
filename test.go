@@ -4,14 +4,9 @@ import (
   "fmt"
 )
 
-type Square struct {
-  name string
-}
-
 func main() {
 
-  pages := 10
-  per := 3
+  d := [3]int{}
 
-  fmt.Println(pages / per)
-}
+  fmt.Println(d)
+} 

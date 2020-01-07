@@ -109,7 +109,7 @@ func (ds *Drafts) Render() {
   /*
     --- Merge two of them
   */
-  pub, _ := template.New("drafts").Parse(string([]byte(draftList)))
+  pub, _ := template.New("drafts").Funcs(template.FuncMap{"N": helper.TmplRange}).Parse(string([]byte(draftList)))
 
   var draftListContent bytes.Buffer
   pub.Execute(&draftListContent, ds)

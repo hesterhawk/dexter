@@ -4,6 +4,12 @@
 </head>
 <body>
 
+    {{range $i := N 1 10}}
+        
+        <div>{{$i}}</div>
+
+    {{end}}
+
     {{range .Drafts}}
 
         <p>{{.Author}}</p>
