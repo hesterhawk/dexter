@@ -4,17 +4,34 @@
 </head>
 <body>
 
-    {{range $i := N 1 10}}
-        
-        <div>{{$i}}</div>
-
-    {{end}}
-
     {{range .Drafts}}
 
         <p>{{.Author}}</p>
 
     {{end}}
+
+    <!-- pagination -->
+
+    {{$current := .CurrentPage}}
+
+    {{if gt .AllPages 1 }}
+
+        <nav class="pagination is-right" role="navigation" aria-label="pagination">
+            <ul class="pagination-list">
+
+                {{range $cnt := N 1 .AllPages}}            
+
+                    <li>                        
+                        <a href="/page-{{$cnt}}.html" class="pagination-link {{ if eq $current $cnt}} is-current {{end}}" aria-label="Page {{$cnt}}" aria-current="page">{{$cnt}}</a>
+                    </li>
+
+                {{end}}
+            </ul>
+        </nav>
+
+    {{end}}
+
+    <!-- /pagination -->
 
 </body>
 </html>

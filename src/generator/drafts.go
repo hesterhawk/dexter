@@ -5,7 +5,6 @@ import (
   "sort"
   "os"
   "fmt"
-  "log"  
   "bytes"
   "helper"
   "strconv"
@@ -26,11 +25,12 @@ func GetAllSortedDrafts(langs []string) []Draft {
 
   var drafts []Draft
 
-  path, _ := os.Getwd()
-
+  /*
+    Gathering drafts from dir and get the header info from the draft file
+  */
   for _, lang := range langs {
 
-    var dir = path + "/drafts/" + lang
+    var dir = PATH_DRAFTS + "/" + lang
 
     var err = os.Chdir(dir)
     exception.CheckFatal(6, err)
@@ -41,7 +41,16 @@ func GetAllSortedDrafts(langs []string) []Draft {
     for _, entry := range files {
 
       d := Draft{File: entry.Name(), FilePath: dir + "/" + entry.Name(), Lang: lang}
+
+      /*
+        Set draft header info to struct
+      */
       d.SetHeader()
+
+      /*
+        Render draft to the html file
+      */
+      d.Render()
 
       drafts = append(drafts, d)
     }
@@ -57,7 +66,7 @@ func GetAllSortedDrafts(langs []string) []Draft {
   return drafts
 }
 
-func GenerateDraftsLists(drafts []Draft, perPage int) {
+func GenerateAllDraftsLists(drafts []Draft, perPage int) {
 
 	currentPage := 1
 	lenDrafts := len(drafts)
@@ -84,26 +93,25 @@ func GenerateDraftsLists(drafts []Draft, perPage int) {
 
 		dl := Drafts{
       AllPages: allPages,
-			CurrentPage: currentPage,
+			CurrentPage: currentPage - 1,
 			Drafts: drafts[from:to],
     }
     
+    /*
+      Render draft list to the html file
+    */
     dl.Render()
 	}
 
 }
 
-// TODO
-func (ds *Drafts) Render() {
 
-  path, _ := os.Getwd()
+func (ds *Drafts) Render() {
 
   /*
     --- Gather draft content
   */
-
-  // TODO - path
-  draftList, err := ioutil.ReadFile(path + "/../../templates/pubs.html")
+  draftList, err := ioutil.ReadFile(PATH_TEMPLATES + "/pubs.html")
   exception.CheckFatal(8, err)
 
   /*
@@ -117,9 +125,8 @@ func (ds *Drafts) Render() {
   /*
     --- Create Draft Lists file
   */
-  helper.CreateFile(path + "/../../bin/page-" + strconv.Itoa(ds.CurrentPage) + ".html", draftListContent.String())
+  helper.CreateFile(PATH_BIN + "/page-" + strconv.Itoa(ds.CurrentPage) + ".html", draftListContent.String())
 
-  // DEBUG
-  fmt.Println(ds.AllPages)
-  log.Fatalf("%s", "dd")
+  // Info
+  fmt.Println("[list] page-" + strconv.Itoa(ds.CurrentPage) + ".html rendered..")
 }

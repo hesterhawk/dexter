@@ -16,6 +16,6 @@ var codes = map[int]string{
 func CheckFatal(code int, e error) {
 
   if e != nil {
-    log.Fatalf("[!!] %s: %s", codes[code], e)
+    log.Fatalf("[!! #%d] %s: %s", code, codes[code], e)
   }
 }

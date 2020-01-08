@@ -2,6 +2,7 @@ package generator
 
 import (
   "os"
+  "fmt"
   "bufio"
   "bytes"
   "helper"
@@ -9,8 +10,6 @@ import (
   "exception"
   "io/ioutil"  
   "text/template"
-  //"log"
-  //"fmt"
 )
 
 
@@ -61,12 +60,12 @@ func (d* Draft) SetHeader() {
 }
 
 
-func (d* Draft) render(path string) {
+func (d* Draft) Render() {
 
   /*
     --- Gather draft content
   */
-  draft, err := ioutil.ReadFile(d.File)
+  draft, err := ioutil.ReadFile(d.FilePath)
   exception.CheckFatal(2, err)
 
   d.Content = string([]byte(draft))
@@ -74,7 +73,7 @@ func (d* Draft) render(path string) {
   /*
     --- Gather pub template content
   */
-  tmpl, err := ioutil.ReadFile(d.Template)
+  tmpl, err := ioutil.ReadFile(PATH_TEMPLATES + "/pub.html")
   exception.CheckFatal(3, err)
 
   tmplContent := string([]byte(tmpl))
@@ -90,5 +89,8 @@ func (d* Draft) render(path string) {
   /*
     --- Create pub file
   */
-  helper.CreateFile(path + "/" + d.File, pubContent.String())
+  helper.CreateFile(PATH_BIN + "/" + d.File, pubContent.String())
+
+  // Info
+  fmt.Println("[pub] " + d.File + " rendered..")
 }
