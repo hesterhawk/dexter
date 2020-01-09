@@ -2,23 +2,19 @@ package main
 
 import (
   "generator"  
-  "bootstrap"
+  "bootstrap"  
 )
 
 func main() {
 
-  // ---- config
-  var langs = []string {"pl", "en"}
-
-  var perPage = 3
-  // ----
-
   bootstrap.Init()
 
-  var drafts = generator.GetAllSortedDrafts(langs)
+  var config = bootstrap.Config()
+
+  var drafts = generator.GetAllSortedDrafts(config.Json.Pubs.Default.Langs)
 
   if len(drafts) > 0 {
 
-    generator.GenerateAllDraftsLists(drafts, perPage)
+    generator.GenerateAllDraftsLists(drafts, config.Json.Pubs.Default.PerPage)
   }
 }
