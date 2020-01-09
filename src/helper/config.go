@@ -44,15 +44,36 @@ package helper
 import (
   "encoding/json"
   "io/ioutil"
-  "fmt"
   "os"
 )
 
 // --- General config
 
 type Config struct {
+  Json JsonConfig
+  AppPath string
+}
+
+// --- Json Config
+
+type JsonConfig struct {
+  Main Main `json:"main"`
   Pub Pub `json:"pub"`
   Pubs Pubs `json:"pubs"`
+}
+
+
+// --- Main
+
+type Main struct {
+  AppUrl string `json:"app_url"`
+  Dirs Dirs `json:"dirs"`
+}
+
+type Dirs struct {
+  Bin string
+  Drafts string
+  Templates string
 }
 
 
@@ -79,18 +100,15 @@ type Default struct {
   Langs []string `json:"langs"`
 }
 
+func LoadJsonConfig() (JsonConfig) {
 
-func LoadConfig() (Config) {
-
-  var config Config
+  var config JsonConfig
 
   path, _ := os.Getwd()
 
-  jsonFile, err := os.Open(path + "/config.json")
+  jsonFile, err := os.Open(path + "/etc/main.json")
 
   if err != nil {
-    fmt.Println(err)
-
     return config
   }
 
@@ -101,4 +119,10 @@ func LoadConfig() (Config) {
   json.Unmarshal(byteValue, &config)
 
   return config
+}
+
+
+func LoadConfig() (Config) {
+
+  return Config{Json: LoadJsonConfig(), AppPath: os.Getenv("GOPATH")}
 }

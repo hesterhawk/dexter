@@ -8,6 +8,7 @@ import (
   "bytes"
   "helper"
   "strconv"
+  "bootstrap"
   "exception"
   "text/template"  
 )
@@ -22,15 +23,17 @@ type Drafts struct {
   --- Get all sorted Drafts - by all languages
 */
 func GetAllSortedDrafts(langs []string) []Draft {
-
+  
   var drafts []Draft
+  
+  var config = bootstrap.Config()
 
   /*
     Gathering drafts from dir and get the header info from the draft file
   */
   for _, lang := range langs {
 
-    var dir = PATH_DRAFTS + "/" + lang
+    var dir = config.AppPath + config.Json.Main.Dirs.Drafts + "/" + lang
 
     var err = os.Chdir(dir)
     exception.CheckFatal(6, err)
@@ -108,10 +111,12 @@ func GenerateAllDraftsLists(drafts []Draft, perPage int) {
 
 func (ds *Drafts) Render() {
 
+  var config = bootstrap.Config()  
+
   /*
     --- Gather draft content
   */
-  draftList, err := ioutil.ReadFile(PATH_TEMPLATES + "/pubs.html")
+  draftList, err := ioutil.ReadFile(config.AppPath + config.Json.Main.Dirs.Templates + "/pubs.html")
   exception.CheckFatal(8, err)
 
   /*
@@ -125,7 +130,7 @@ func (ds *Drafts) Render() {
   /*
     --- Create Draft Lists file
   */
-  helper.CreateFile(PATH_BIN + "/page-" + strconv.Itoa(ds.CurrentPage) + ".html", draftListContent.String())
+  helper.CreateFile(config.AppPath + config.Json.Main.Dirs.Bin + "/page-" + strconv.Itoa(ds.CurrentPage) + ".html", draftListContent.String())
 
   // Info
   fmt.Println("[list] page-" + strconv.Itoa(ds.CurrentPage) + ".html rendered..")

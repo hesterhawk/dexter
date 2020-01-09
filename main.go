@@ -1,7 +1,8 @@
 package main
 
 import (
-  "generator"
+  "generator"  
+  "bootstrap"
 )
 
 func main() {
@@ -11,6 +12,8 @@ func main() {
 
   var perPage = 3
   // ----
+
+  bootstrap.Init()
 
   var drafts = generator.GetAllSortedDrafts(langs)
 

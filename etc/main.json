@@ -1,4 +1,12 @@
 {
+  "main": {
+    "app_url": "http://google.com",
+    "dirs": {
+      "bin": "/bin",
+      "drafts": "/drafts",      
+      "templates": "/templates"
+    }
+  },
   "pub": {
     "resources": [
       {

@@ -7,6 +7,7 @@ import (
   "bytes"
   "helper"
   "strconv"  
+  "bootstrap" 
   "exception"
   "io/ioutil"  
   "text/template"
@@ -27,7 +28,6 @@ type Draft struct {
   Visible bool
   Update bool
 }
-
 
 func (d* Draft) SetHeader() {
 
@@ -62,6 +62,8 @@ func (d* Draft) SetHeader() {
 
 func (d* Draft) Render() {
 
+  var config = bootstrap.Config()
+
   /*
     --- Gather draft content
   */
@@ -73,7 +75,7 @@ func (d* Draft) Render() {
   /*
     --- Gather pub template content
   */
-  tmpl, err := ioutil.ReadFile(PATH_TEMPLATES + "/pub.html")
+  tmpl, err := ioutil.ReadFile(config.AppPath + config.Json.Main.Dirs.Templates + "/pub.html")
   exception.CheckFatal(3, err)
 
   tmplContent := string([]byte(tmpl))
@@ -89,7 +91,7 @@ func (d* Draft) Render() {
   /*
     --- Create pub file
   */
-  helper.CreateFile(PATH_BIN + "/" + d.File, pubContent.String())
+  helper.CreateFile(config.AppPath + config.Json.Main.Dirs.Bin + "/" + d.File, pubContent.String())
 
   // Info
   fmt.Println("[pub] " + d.File + " rendered..")
