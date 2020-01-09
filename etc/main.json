@@ -7,19 +7,11 @@
       "templates": "/templates"
     }
   },
-  "pub": {
-    "resources": [
-      {
-        "type": "js",
-        "url": "http:/google.com"
-      },
-      {
-        "type": "css",
-        "url": "http:/google.com"
-      }
-    ]
+  "index": {
+    "default": {
+      "per_page": 3
+    }
   },
-
   "pubs": {
     "default": {
       "per_page": 3,

@@ -13,6 +13,8 @@ func main() {
 
   var drafts = generator.GetAllSortedDrafts(config.Json.Pubs.Default.Langs)
 
+  generator.GenerateIndexPage(drafts)
+
   if len(drafts) > 0 {
 
     generator.GenerateAllDraftsLists(drafts, config.Json.Pubs.Default.PerPage)

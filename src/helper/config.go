@@ -58,7 +58,7 @@ type Config struct {
 
 type JsonConfig struct {
   Main Main `json:"main"`
-  Pub Pub `json:"pub"`
+  Index Index `json:"index"`
   Pubs Pubs `json:"pubs"`
 }
 
@@ -77,25 +77,24 @@ type Dirs struct {
 }
 
 
-// --- Pub
+// --- Index
 
-type Pub struct {
-  Resources []Resource `json:"resources"`
+type Index struct {
+  Default IndexDefault `json:"default"`  
 }
 
-type Resource struct {
-  Type string `json:"type"`
-  Url  string `json:"url"`
+type IndexDefault struct {
+  PerPage int `json:"per_page"`
 }
 
 
 // --- Pubs
 
 type Pubs struct {
-  Default Default `json:"default"`
+  Default PubsDefault `json:"default"`
 }
 
-type Default struct {
+type PubsDefault struct {
   PerPage int `json:"per_page"`
   Langs []string `json:"langs"`
 }
