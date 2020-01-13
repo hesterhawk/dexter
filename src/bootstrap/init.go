@@ -34,7 +34,7 @@ func CleanDirFromHtml(path string) {
 
 		var file = strings.Split(d.Name(), ".")
 
-		if file[1] == "html" {
+		if 2 == len(file) && file[1] == "html" {
 			os.RemoveAll(path + "/" + d.Name())
 		}
 	}
