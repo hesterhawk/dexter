@@ -1,16 +1,84 @@
+
+<!DOCTYPE html>
 <html>
-<head>
-  <title>Index</title>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>s q u a d r o n 3 1</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="default.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
-  Index
+    <link href="https://fonts.googleapis.com/css?family=Play|Poppins|Aldrich" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Jura:600" rel="stylesheet">
 
-  {{range .Drafts}}
+  </head>
+  <body>
+    <section class="hero is-medium is-primary is-bold">
+      <div id="head-body" class="hero-body">
+        <div class="container">
+          <div id="wrapper" >
+            <h1 class="glitch is-hidden-mobile" data-text="squadron31">squadron31</h1>
+            <span class="sub is-hidden-mobile">EFFECT</span>
+            <span class="sub is-hidden-desktop is-hidden-tablet">SQUADRON31</span><br><br>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
 
-    <p>{{.Author}}</p>
+      <div class="columns">
+        <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop header">
 
-  {{end}}
+          <p class="subtitle is-4">
+            &#955; Zaglądamy pod maskę różnym systemom wbudowanym.<br>
+            <strong>IoT</strong>, <strong>Mips</strong> <strong>ARM</strong>, ale nie tylko
+          </p>
 
-</body>
+          <article class="message is-primary">
+            <div class="message-body">
+              <a href="#"><strong>MIPS from zero to hero</strong></a> już dostępny online!!111
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+    </section>
+    <section>
+      <div class="columns">
+        <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop pubs">
+
+          <br><hr><br>
+
+          {{range .Drafts}}
+            <div class="item">
+              <p class="title">
+                <a href="{{.File}}">{{.Title}}</a>
+              </p>
+              <p class="subtitle silver">
+                @{{.Author}}
+              </p>
+            </div>
+          {{end}}
+
+          {{if gt .DraftsCount .DraftsPerPage }}
+            <a href="page-1.html" class="button is-primary is-light is-pulled-right">zobacz wszystkie &rarr;</a>
+          {{end}}
+        </div>
+      </div>
+
+      <br><br>
+
+    </section>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <img src="https://squadron31.com/static/img/wings.png" style="width:70px;">
+        <br>
+        <p>@ 2020 squadron<span class="shadow-green">31</span>.com</p>
+      </div>
+    </footer>
+  </body>
 </html>

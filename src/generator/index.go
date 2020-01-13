@@ -10,8 +10,11 @@ import (
   "text/template"
 )
 
-type Index struct {
+type Index struct {	
+	FeaturedDraft Draft
 	Drafts []Draft
+	DraftsCount int
+	DraftsPerPage int
 }
 
 func GenerateIndexPage(drafts []Draft) {
@@ -20,11 +23,13 @@ func GenerateIndexPage(drafts []Draft) {
 
 	var perPage = config.Json.Index.Default.PerPage
 
-	if len(drafts) > perPage {
+	var draftsLen = len(drafts)
+
+	if draftsLen > perPage {
 		drafts = drafts[:perPage]
 	}
 
-	var index = Index{Drafts:drafts}
+	var index = Index{Drafts:drafts, FeaturedDraft: drafts[0], DraftsCount: draftsLen, DraftsPerPage: perPage}
 
 	index.Render()
 }

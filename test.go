@@ -1,12 +1,23 @@
 package main
 
 import (
-  "fmt"
+	//"fmt"
+	"io/ioutil"
+	"strings"
+	"os"
 )
 
 func main() {
+	var path = "/home/mati/go/dexter/bin"
 
-  d := [3]int{}
+	dir, _ := ioutil.ReadDir(path)
 
-  fmt.Println(d)
-} 
+	for _, d := range dir {
+
+		var file = strings.Split(d.Name(), ".")
+
+		if file[1] == "html" {
+			os.RemoveAll(path + "/" + d.Name())
+		}
+	}
+}

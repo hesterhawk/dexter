@@ -1,1 +1,1 @@
-export GOPATH=$(pwd)
+GOPATH=$(pwd)

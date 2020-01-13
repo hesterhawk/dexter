@@ -1,0 +1,88 @@
+
+html, body {
+  font-family: 'poppins', sans-serif;
+}
+
+.silver {
+  color:#7e7e7e;
+}
+
+.light-green {
+  color: #64dcdc;
+}
+
+.shadow-green {
+  color: #03adad;
+}
+
+a {
+  color: #585858;
+}
+
+a:hover {
+  color: #7d7d7d;
+}
+
+.header-info {
+  margin-top: 80px;
+}
+
+.points {
+  font-size: 30px;
+}
+
+.header {
+  margin-top: 40px;
+}
+
+.columns {
+  margin-right: 0rem;
+}
+
+.column {
+  padding-right: 0px;
+}
+
+.main-content {
+  margin-top:40px;
+}
+
+.pub p {
+  line-height: 34px;
+  font-size: 20px;
+}
+
+.pub .title {
+  margin-bottom:0px;
+}
+
+.pubs .item {
+  margin-bottom: 40px;
+}
+
+.pubs .item .subtitle {
+  font-size: 18px;
+  color: #868686;
+}
+
+.pubs-list-header .subtitle {
+  color: #64dcdc !important;
+  margin-top: 0px !important;
+  font-size: 17px;
+  letter-spacing: 5px;
+}
+
+.pagination-link.is-current {
+  background-color: #64dcdc;
+  border-color: #ffffff;
+  color: #fff;
+}
+
+.brdcrmb {
+  margin-bottom: 40px;
+  font-size: 23px;
+}
+
+.brdcrmb .item {
+  margin-right: 10px;
+}

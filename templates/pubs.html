@@ -1,37 +1,87 @@
+
+<!DOCTYPE html>
 <html>
-<head>
-    <title>PUB</title>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>s q u a d r o n 3 1</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="default.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
-    {{range .Drafts}}
+    <link href="https://fonts.googleapis.com/css?family=Play|Poppins|Aldrich" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Jura:600" rel="stylesheet">
 
-        <p>{{.Author}}</p>
+  </head>
+  <body>
+    <section class="hero is-dark pubs-list-header">
+      <div class="hero-body">
+        <div class="container">
+          <p class="title">
+            s q u a d r o n 3 1
+          </p>
+          <p class="subtitle">
+            E F F E C T
+          </p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="columns">
+        <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop main-content pubs pubs-list">
 
-    {{end}}
+          <div class="brdcrmb">
+            <span class="item">&#8759;</span> <a href="#" class="item">główna</a>
+          </div>
 
-    <!-- pagination -->
+          {{range .Drafts}}
 
+            <div class="item">
+                <p class="title">
+                <a href="{{.File}}">{{.Title}}</a>
+                </p>
+                <p class="subtitle silver">
+                @{{.Author}}
+                </p>
+            </div>
+  
+          {{end}}
+
+        </div>
+
+      </div>
+      
     {{$current := .CurrentPage}}
 
     {{if gt .AllPages 1 }}
 
-        <nav class="pagination is-right" role="navigation" aria-label="pagination">
-            <ul class="pagination-list">
+        <div class="columns">
+            <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop">
+                <nav class="pagination is-right" role="navigation" aria-label="pagination">
+                    <ul class="pagination-list">
+                        {{range $cnt := N 1 .AllPages}}            
+                            <li>                        
+                                <a href="/page-{{$cnt}}.html" class="pagination-link {{ if eq $current $cnt}} is-current {{end}}" aria-label="Page {{$cnt}}" aria-current="page">{{$cnt}}</a>
+                            </li>
+                        {{end}}                
+                    </ul>
+                </nav>
+            </div>
+        </div>
 
-                {{range $cnt := N 1 .AllPages}}            
+        <br><br>
 
-                    <li>                        
-                        <a href="/page-{{$cnt}}.html" class="pagination-link {{ if eq $current $cnt}} is-current {{end}}" aria-label="Page {{$cnt}}" aria-current="page">{{$cnt}}</a>
-                    </li>
+    {{end}}      
 
-                {{end}}
-            </ul>
-        </nav>
+    </section>
 
-    {{end}}
-
-    <!-- /pagination -->
-
-</body>
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <img src="https://squadron31.com/static/img/wings.png" style="width:70px;">
+        <br>
+        <p>@ 2020 squadron<span class="shadow-green">31</span>.com</p>
+      </div>
+    </footer>
+  </body>
 </html>
