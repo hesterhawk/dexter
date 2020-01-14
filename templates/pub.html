@@ -13,16 +13,19 @@
     <link href="https://fonts.googleapis.com/css?family=Play|Poppins|Aldrich" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Jura:600" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/atom-one-dark.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
   </head>
   <body>
-    <section class="hero is-medium is-primary is-bold">
-      <div id="head-body" class="hero-body">
+    <section class="hero is-dark pubs-list-header">
+      <div class="hero-body">
         <div class="container">
-          <div id="wrapper" >
-            <h1 class="glitch is-hidden-mobile" data-text="squadron31">squadron31</h1>
-            <span class="sub is-hidden-mobile">EFFECT</span>
-            <span class="sub is-hidden-desktop is-hidden-tablet">SQUADRON31</span>
-          </div>
+          <p class="title">
+            s q u a d r o n 3 1
+          </p>
+          <p class="subtitle">
+            E F F E C T
+          </p>
         </div>
       </div>
     </section>
@@ -32,12 +35,12 @@
         <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop main-content pub">
 
           <div class="brdcrmb">
-            <span class="item">&#8759;</span> <a href="index.html" class="item">główna</a> <span class="item">&#8759;</span> <a href="#" class="item">lista</a>
+            <a href="index.html" class="item">główna</a> <span class="item">&#8759;</span> <a href="page-1.html" class="item">lista</a>
           </div>
 
-          <h2 class="title is-3">{{.Title}}</h2>
+          <h1 class="title is-3">{{.Title}}</h1>
 
-          <p class="silver">@{{.Author}} &nbsp;&#9816;&nbsp; {{.CreatedDate}}</p>
+          <p class="info silver">@{{.Author}} &nbsp;&#9816;&nbsp; {{.CreatedDate}}</p>
 
           <br>
 
@@ -53,6 +56,10 @@
       <br><br>
 
     </section>
+
+    <script>
+      hljs.initHighlightingOnLoad();
+    </script>
 
     <footer class="footer">
       <div class="content has-text-centered">

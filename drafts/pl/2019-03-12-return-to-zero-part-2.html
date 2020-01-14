@@ -1,0 +1,81 @@
+<!--
+Return To Zero - Runda 2
+Na samym początku nie było tak kolorowo jak w publikacji Aditya Gupty. Podczas researchu natknąłem się na problemy, na które nie znalazłem jednoznacznego rozwiązania ani przyczyny ich wystąpienia w środowisku jakiego używam.
+12 marca, 2019
+hesterhawk01
+http://google.com
+True
+True
+-->
+
+<p>
+    Na samym początku nie było tak kolorowo jak w publikacji <a class="url" href="https://blog.attify.com/demystifying-ret2zp/" target="_blank">Aditya Gupty</a>. Podczas researchu natknąłem się na problemy, na które nie znalazłem jednoznacznego rozwiązania ani przyczyny ich wystąpienia w środowisku jakiego używam.
+  </p>
+
+  <h2>Nieprawidłowe parametry</h2>
+
+  <p>
+    W payloadzie umieściłem adres ciągu "/bin/bash" (0xbeffff34) zamiast "/bin/sh" co po uruchomieniu eksploitu skutkowało błędem "Segmentation Fault".
+  </p>
+
+  <p>
+    Chciałem rozwiązać ten problem zmieniając skok z funkcji "system", do funkcji "execve" zamiast w pierwszej kolejności zajrzeć do <a class="url" href="http://man7.org/linux/man-pages/man3/system.3.html" target="_blank">manuala</a>, co był trochę bezmyślne. Exploit znowu nie zadziałał. Tu w tym miejscu muszę przyznać się bez bicia, że nie analizowałem czemu właśnie parametr "/bin/bash" stanowi w tym kontekście aż taki problem. Chcąc to jakoś obejść zmieniłem trochę kierunek brnąc w temat dalej, i tutaj pojawiła się mała ciekawostka ;)        
+  </p>
+
+  <p>
+    Funkcja “execve ”przyjmuje trzy parametry:
+  </p>
+
+  <pre class="hljs"><code class="c">int execve(const char *filename, char *const argv[], char *const envp[]);</code></pre>
+
+  <p>
+    W architekturze ARM argumenty funkcji pobierane są z rejestrów - w naszym przypadku - R0, R1, R2. Czytając poprzedni artykuł możesz zaobserwować, że rejestr R2 wypełniany jest wartością "1" (zobacz obrazek nad tagiem: #dziwnytenR2) i to stanowi problem podzas eksploitacji programu.        
+  </p>
+
+  <p>
+    Jeśli teraz uruchomisz gdb, zrobisz brejka przed skokiem do funkcji "execve" i zamienisz wartość rejestru R2 z 1 na 0, to exploit zadziała. Podobny problem występuje też przy wspomnianej funkcji "execl". Teraz jest pytanie, jak to obejść poza debuggerem. Da się. Możesz pokombinować samemu tak dla sportu i podzielić się swoim rozwiązaniem, jeśli jednak jesteś ciekawy jak to obejść - zapraszam Cię na rundę 3 już niebawem :)        
+  </p>
+
+  <h2>FAQ</h2>
+
+  <p class="m-bottom-30">
+    Czyli odpowiedzi na pytania, które mogły się nasunąć podczas researchu.
+  </p>
+
+  <h3 class="m-bottom-30" >Nie rozumiem/jak zacząć</h3>
+
+  <p>
+    <a class="url" href="https://azeria-labs.com" target="_blank">https://azeria-labs.com</a> - masa mega wartościowej wiedzy przedstawionej w bardzo przystępny sposób. Jeśli siedzisz w tematach: ARM pod kątem security (reverse engineering, jak działa stos, sterta itp), środowisko pracy (gdb, gef, vm, itp.), albo dopiero zaczynasz - polecam Ci tą całą stronę.
+  </p>
+
+  <p>
+    Jeśli dopiero zaczynasz - zacznij od tutoriala na samym dole <a class="url" href="https://azeria-labs.com/the-importance-of-deep-work-the-30-hour-method-for-learning-a-new-skill/" target="_blank">tej strony</a>.
+  </p>
+
+  <p>
+    Dodatkowo znajdziesz tam wiedzę z zakresu - jak optymalnie podejść do nauki rzeczy, które Cię interesują. Nie musisz także posiadać swojego Raspberry PI - na stronie znajdziesz obrazy na VM do swoich testów!
+  </p>
+
+  <p>
+    <a class="url" href="https://blog.attify.com/demystifying-ret2zp/" target="_blank">https://blog.attify.com/demystifying-ret2zp</a> - publikacja, na której się opierałem. Znajdziesz w niej dodatkowo opis ataku dla architektóry Intel.
+  </p>
+
+  <p>
+    Google, czas, mózg i chęci - bardzo ważne i przydatne narzędzia do eksperymentowania
+  </p>
+
+  <h3 class="m-bottom-30">Jak obliczyć długość payloadu</h3>
+
+  <p>
+    Sekcja P1 <a class="url" href="https://squadron31.com/show/pl/return-to-zero-part-1" target="_blank">rundy 1</a>, pierwszy obrazek - jak obliczyłem, że payload rozpoczyna się od 68 znaków 'A'? Polecałbym Tobie zaznajomienie się z chociażby <a class="url" href="https://github.com/Svenito/exploit-pattern" target="_blank">tym narzędziem</a>, które jest mega pomocne w obliczaniu offsetów.
+  </p>
+
+  <h3 class="m-bottom-30">Mowa końcowa</h3>
+
+  <p>
+    Zachęcam Cię do własnych eksperymentów z tematem a jeszcze bardziej 
+    do pogłębiania wiedzy z zakresu technologii ARM (na przykład czytając manuala do poduszki ;)
+    <br><br>Będziemy bardzo wdzięczni za każdy konstruktywny <a class="url" href="/contact/pl">feedback</a>.
+  </p>
+
+  <p class="is-pulled-right">research: Mateusz Wójcik</p>

@@ -55,11 +55,9 @@
           {{range .Drafts}}
             <div class="item">
               <p class="title">
-                <a href="{{.File}}">{{.Title}}</a>
+                <h1 class="title is-3"><a href="{{.File}}">{{.Title}}</a></h1>
               </p>
-              <p class="subtitle silver">
-                @{{.Author}}
-              </p>
+              <p class="subtitle silver">@{{.Author}} &nbsp;&#9816;&nbsp; {{.CreatedDate}}</p>
             </div>
           {{end}}
 

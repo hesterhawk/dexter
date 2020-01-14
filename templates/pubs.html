@@ -32,18 +32,17 @@
         <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop main-content pubs pubs-list">
 
           <div class="brdcrmb">
-            <span class="item">&#8759;</span> <a href="#" class="item">główna</a>
+            <a href="index.html" class="item">główna</a> <span class="item">&#8759;</span> 
           </div>
 
           {{range .Drafts}}
 
             <div class="item">
                 <p class="title">
-                <a href="{{.File}}">{{.Title}}</a>
+                  <h1 class="title is-3"><a href="{{.File}}">{{.Title}}</a></h1>
                 </p>
-                <p class="subtitle silver">
-                @{{.Author}}
-                </p>
+                <p class="subtitle silver">@{{.Author}} &nbsp;&#9816;&nbsp; {{.CreatedDate}}</p>
+                <p>{{.Description}}</p>
             </div>
   
           {{end}}
