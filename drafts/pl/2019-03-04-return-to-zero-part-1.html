@@ -88,7 +88,9 @@ testdata
       <p>Wynik:</p>
 
       <div class="text-center">
-      <img class="m-bottom-30" src="/pub/1/_blog_rtz02.png">      
+      
+      <img class="m-bottom-30" src="pub/1/_blog_rtz02.png"><br>
+
       </div>
 
       <p>
@@ -106,7 +108,7 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
 <br>
       <p>Wynik:</p>
 
-      <img class="m-bottom-30" src="/pub/1/_blog_rtz03.png">      
+      <img class="m-bottom-30" src="pub/1/_blog_rtz03.png"><br>
 
       <p>
         I stało się coś dziwnego. Wartość rejestrów PC oraz LR została nadpisana. Program próbuje odwołać się do obszaru pamięci, do której nie ma dostępu - 0x61616161 a to oznacza, że znaleźliśmy miejsce gdzie możemy przejąć kontrolę nad wykonywanym programem. Supi!!        
@@ -213,23 +215,23 @@ End of assembler dump.</code></pre>
         Najlepiej będzie, jeśli prześledzisz sobie cały flow poniżej na ilustracji graficznej:
       </p>
 
-      <img class="m-bottom-30" src="/pub/1/rtz_flow_01.png"> 
+      <img class="m-bottom-30" src="pub/1/rtz_flow_01.png"><br> 
       <br>
       <p><b>P1</b><br> Przepełnienie rejestru PC..</p>
 
-      <img class="m-bottom-30" src="/pub/1/rtz_flow_02.png"> 
+      <img class="m-bottom-30" src="pub/1/rtz_flow_02.png"><br> 
       <br>
       <p>
         .. a następnie skok do funkcji “lrand48”. Możesz teraz zaobserwować działanie instrukcji "POP {R11, PC}"" i zmianę wartości rejestrów po jej wykonaniu.        
       </p>
 
-      <img class="m-bottom-30" src="/pub/1/rtz_flow_03.png"> 
+      <img class="m-bottom-30" src="pub/1/rtz_flow_03.png"><br> 
       <br>
       <p>
         <b>P2</b><br>Ekstra. Jesteśmy krok od wywołania instrukcji LDR. Nasz payload zostaje zaktualizowany o odpowiednie wartości. Zwróć uwagę na "wypełniacz" (4 bajty "B"), który jest wymagany do tego aby adres “/bin/sh” został załadowany z odpowiedniego miejsca na stosie (adres SP + 4 bajty) do rejestru R0.
       </p>
 
-      <img class="m-bottom-30" src="/pub/1/rtz_flow_04.png"> 
+      <img class="m-bottom-30" src="pub/1/rtz_flow_04.png"><br> 
       <br>
       <p>
         Ostatnim elementem naszej układanki jest skok do funkcji "system". Aby dojść do tego, muszą zostać wykonane dalsze operacje zawarte w funkcji "lrand48", w której aktualnie się znajdujemy. No to co tam mamy dalej..         
@@ -243,7 +245,7 @@ End of assembler dump.</code></pre>
         "pop {pc}" - ta operacja jest dopełnieniem powyższego kroku. "Zdejmij adres ze stosu i wrzuć go do rejestru PC", a dokładniej zdejmij adres funkcji "system", na który wskazuje adres umieszczony w rejestrze SP. Uff.. 
       </p>
 
-      <img src="/pub/1/rtz_flow_05.png">
+      <img src="pub/1/rtz_flow_05.png"><br>
       <p class="img-desc">#dziwnytenR2</p>
 
       <p>

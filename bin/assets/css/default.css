@@ -3,18 +3,6 @@ html, body {
   font-family: 'poppins', sans-serif;
 }
 
-.silver {
-  color:#7e7e7e;
-}
-
-.light-green {
-  color: #64dcdc;
-}
-
-.shadow-green {
-  color: #03adad;
-}
-
 a {
   color: #585858;
 }
@@ -29,7 +17,7 @@ h1 {
 
 h2 {
   font-size: 27px;
-  margin: 60px 0px 27px 0px;
+  margin: 0px 0px 27px 0px;
   font-weight: bold;
 }
 
@@ -37,6 +25,22 @@ h3 {
   font-size: 25px;
   margin: 60px 0px 27px 0px;
   font-weight: bold;
+}
+
+.slogan {
+  font-family: 'Aldrich', sans-serif;
+}
+
+.silver {
+  color:#7e7e7e;
+}
+
+.light-green {
+  color: #64dcdc;
+}
+
+.shadow-green {
+  color: #03adad;
 }
 
 .header-info {
@@ -49,6 +53,11 @@ h3 {
 
 .header {
   margin-top: 40px;
+}
+
+.social img {
+  height: 30px;
+  margin-right: 10px;
 }
 
 .columns {
