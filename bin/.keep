@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>s q u a d r o n 3 1</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" href="assets/css/header.css">
+    <link rel="stylesheet" href="assets/css/default.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Play|Poppins|Aldrich" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Jura:600" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/atom-one-dark.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+  </head>
+  <body>
+    <section class="hero is-dark pubs-list-header">
+      <div class="hero-body">
+        <div class="container">
+          <p class="title">
+            s q u a d r o n 3 1
+          </p>
+          <!-- <p class="subtitle">E F F E C T</p> !-->
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="columns">
+
+        <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop main-content pub">
+
+          <div class="brdcrmb">
+            <a href="index.html" class="item">główna</a> <span class="item">&#8759;</span> <a href="page-1.html" class="item">lista</a>
+          </div>
+
+          <h1 class="title is-3"></h1>
+
+          <p class="info silver">@ &nbsp;&#9816;&nbsp; </p>
+
+          <br>
+
+          <a href="index.html" class="button is-small is-primary is-light">&#8592; powrót do listy</a>
+
+          <br><br>
+
+          
+
+        </div>
+      </div>
+
+      <br><br>
+
+    </section>
+
+    <script>
+      hljs.initHighlightingOnLoad();
+    </script>
+
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <img src="https://squadron31.com/static/img/wings.png" style="width:70px;">
+        <br>
+        <p>@ 2020 squadron<span class="shadow-green">31</span>.com</p>
+      </div>
+    </footer>
+  </body>
+</html>
