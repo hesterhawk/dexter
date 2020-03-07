@@ -30,7 +30,7 @@
         <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop main-content pubs pubs-list">
 
           <div class="brdcrmb">
-            <a href="index.html" class="item">główna</a> <span class="item">&#8759;</span> 
+            <a href="index.html" class="item">główna</a> <span class="item">&#8759;</span>
           </div>
 
           {{range .Drafts}}
@@ -42,13 +42,13 @@
                 <p class="subtitle silver">@{{.Author}} &nbsp;&#9816;&nbsp; {{.CreatedDate}}</p>
                 <p>{{.Description}}</p>
             </div>
-  
+
           {{end}}
 
         </div>
 
       </div>
-      
+
     {{$current := .CurrentPage}}
 
     {{if gt .AllPages 1 }}
@@ -57,11 +57,11 @@
             <div class="column is-half-desktop is-offset-1-mobile is-offset-one-quarter-desktop">
                 <nav class="pagination is-right" role="navigation" aria-label="pagination">
                     <ul class="pagination-list">
-                        {{range $cnt := N 1 .AllPages}}            
-                            <li>                        
+                        {{range $cnt := N 1 .AllPages}}
+                            <li>
                                 <a href="page-{{$cnt}}.html" class="pagination-link {{ if eq $current $cnt}} is-current {{end}}" aria-label="Page {{$cnt}}" aria-current="page">{{$cnt}}</a>
                             </li>
-                        {{end}}                
+                        {{end}}
                     </ul>
                 </nav>
             </div>
@@ -69,13 +69,13 @@
 
         <br><br>
 
-    {{end}}      
+    {{end}}
 
     </section>
 
     <footer class="footer">
       <div class="content has-text-centered">
-        <img src="https://squadron31.com/static/img/wings.png" style="width:70px;">
+        <img src="assets/gfx/wings.png" style="width:70px;">
         <br>
         <p>@ 2020 squadron<span class="shadow-green">31</span>.com</p>
       </div>
